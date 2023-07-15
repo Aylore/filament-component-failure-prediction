@@ -54,7 +54,7 @@ class ModelTraining:
     
     def predict(self , X):
         if isinstance(X , (float , int)):
-            X = np.array([X]).reshape(1,-1)
+            X = np.array([X]).reshape(-1,1)
 
         results = self.model.predict(X)
 

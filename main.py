@@ -7,6 +7,8 @@ from utils.preprocess import DataProcessor
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.linear_model import LinearRegression
 
+from sklearn.ensemble import RandomForestRegressor
+
 from src.inference import Inference
 
 def main(df_path):
@@ -21,6 +23,12 @@ def main(df_path):
     ## Preprocess Data
     df_large , df_small = preprocess.prep_data(df)
 
+    #### Temproray for DEV only 
+    # # df_large.to_csv("data/df_large_prep.csv")
+    # # df_small.to_csv("data/df_small_prep.csv")
+    # df_large = pd.read_csv("data/df_large_prep.csv",index_col=0)
+    # df_small = pd.read_csv("data/df_small_prep.csv",index_col=0)
+
     ## Train model
     model_large = train_model_large.train_df(df_large )
     model_small = train_model_small.train_df(df_small )
@@ -28,7 +36,7 @@ def main(df_path):
     return model_large , model_small
 
 if __name__ == "__main__":
-    path = 'data/MCC.XML'
+    path = 'data/KUH.XML'
     
     ## Initialize model
     model_large_init = MultiOutputRegressor(LinearRegression())

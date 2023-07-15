@@ -43,6 +43,19 @@ class DataProcessor:
 
         return df_copy
 
+    def replace_noisy_values(self , df):
+        df_copy = df.copy()
+        values = df.NewCFactor.values.copy()
+        last_descending_point = values[0]
+        for i in range(1, len(values)):
+            if values[i] >= last_descending_point:
+                values[i] = last_descending_point
+            else:
+                last_descending_point = values[i]
+
+        df_copy.NewCFactor = values
+        return df_copy
+
     
     def prep_data(self,  df = None):
         if df is None:
@@ -67,6 +80,8 @@ class DataProcessor:
         
         self.df_large = self.sort_data(self.df_large)
 
+        self.df_large = self.replace_noisy_values(self.df_large)
+
         self.df_large = self.add_cum(self.df_large)
         
         
@@ -75,6 +90,8 @@ class DataProcessor:
         self.df_small = self.extract_data(df_small)
         
         self.df_small = self.sort_data(self.df_small)
+
+        self.df_small = self.replace_noisy_values(self.df_small)
 
         self.df_small = self.add_cum(self.df_small)
 
@@ -87,5 +104,17 @@ class DataProcessor:
 
 
 if __name__ == "__main__":
-    df = pd.read_xml("data/MCC.XML")
-    # df_large ,df_small =prep_data(df)
+    import matplotlib.pyplot as plt
+
+    df = pd.read_xml("data/KUH.XML")
+    processor = DataProcessor()
+    df_large ,df_small = processor.prep_data(df)
+
+    plt.plot(df_large.NewCFactor.values)
+    plt.show()
+
+    
+
+
+
+
