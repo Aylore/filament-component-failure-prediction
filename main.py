@@ -1,15 +1,11 @@
 import pandas as pd
 
-from src.train_linear import ModelTraining
+from src.train import ModelTraining
+from src.init_lr import init_lr
+
 from utils.preprocess import DataProcessor
 
 
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.linear_model import LinearRegression
-
-from sklearn.ensemble import RandomForestRegressor
-
-from src.inference import Inference
 
 def main(df_path):
 
@@ -39,12 +35,12 @@ if __name__ == "__main__":
     path = 'data/KUH.XML'
     
     ## Initialize model
-    model_large_init = MultiOutputRegressor(LinearRegression())
-    model_small_init = MultiOutputRegressor(LinearRegression())
+    model_large_init , model_small_init = init_lr()
 
     ## Initialize Date preprocessor
     preprocess = DataProcessor()
     
     model_large , model_small = main(path)
+
 
 
