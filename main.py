@@ -2,6 +2,7 @@ import pandas as pd
 
 from src.train import ModelTraining
 from src.init_lr import init_lr
+from src.init_exp import ExpRegression
 
 from utils.preprocess import DataProcessor
 

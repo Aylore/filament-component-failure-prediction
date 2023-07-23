@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.metrics import mean_squared_error as mse
 import pandas as pd
+import os
 
 def calc_rmse(y_true , y_preds):
 
@@ -9,6 +10,9 @@ def calc_rmse(y_true , y_preds):
 
 
 def eval_model(X , y, preds , test = False  , small = False):
+    if not os.path.exists("plots/"):
+        os.mkdir("plots")
+
     data_type = "train" if not test else "test"
     dataset_type = "Large" if not small else "Small"
 
@@ -35,3 +39,4 @@ def eval_model(X , y, preds , test = False  , small = False):
     plt.savefig(f"plots/{plot_title}_{str(datetime.now().strftime('%Y-%m-%d %H-%M-%S'))}")
     plt.show()
 
+ 
