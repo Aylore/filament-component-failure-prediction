@@ -80,7 +80,7 @@ class DataProcessor:
         
         self.df_large = self.sort_data(self.df_large)
 
-        self.df_large = self.replace_noisy_values(self.df_large)
+        # self.df_large = self.replace_noisy_values(self.df_large)
 
         self.df_large = self.add_cum(self.df_large)
         
@@ -91,7 +91,7 @@ class DataProcessor:
         
         self.df_small = self.sort_data(self.df_small)
 
-        self.df_small = self.replace_noisy_values(self.df_small)
+        # self.df_small = self.replace_noisy_values(self.df_small)
 
         self.df_small = self.add_cum(self.df_small)
 

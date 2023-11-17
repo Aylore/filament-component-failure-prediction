@@ -2,16 +2,19 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler 
+from sklearn.preprocessing import MinMaxScaler , PolynomialFeatures
 
 from utils.evaluation import eval_model
 
 
 class ModelTraining:
-    def __init__(self , model , small = False):
+    def __init__(self , model , poly = False , small = False):
         self.model = model
         self.small = small
+        self.poly = poly
+        self.degree  =  2
 
+        self.poly_deg = None
 
     def train_df(self , trans_df ):
         
@@ -19,11 +22,11 @@ class ModelTraining:
         
         y = trans_df[["RunLength_Cum", "N_Pulses_Cum"]]
         
-        X_train , X_test ,y_train , y_test = train_test_split(X , y ,test_size = 0.2)
+        X_train , X_test ,y_train , y_test = train_test_split(X , y ,test_size = 0.2 , random_state=3407)
         
         ##### Scaling
         
-        self.scaler = StandardScaler()
+        self.scaler = MinMaxScaler(feature_range=(1,10))
         
         y_train = pd.DataFrame(self.scaler.fit_transform(y_train) 
                                 , columns=["RunLength_Cum","N_Pulses_Cum"])
@@ -32,7 +35,17 @@ class ModelTraining:
                                 , columns=["RunLength_Cum","N_Pulses_Cum"])
 
         
-        
+        ##### Extracting Polynomial features 
+
+        if self.poly :
+            print(X_train , X_train.shape)
+
+            self.poly_deg = PolynomialFeatures(self.degree)
+            X_train = self.poly_deg.fit_transform(X_train)
+            X_test = self.poly_deg.transform(X_test)
+
+            print(X_train , X_train.shape)
+
 
         
         
@@ -55,6 +68,9 @@ class ModelTraining:
     def predict(self , X):
         if isinstance(X , (float , int)):
             X = np.array([X]).reshape(-1,1)
+
+        if self.poly :
+            X = self.poly_deg.transform(X)
 
         results = self.model.predict(X)
 

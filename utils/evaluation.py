@@ -13,6 +13,14 @@ def eval_model(X , y, preds , test = False  , small = False):
     if not os.path.exists("plots/"):
         os.mkdir("plots")
 
+    try:
+        if X.shape[1] > 1 :
+            X = X[: , 1].ravel() ## 1 is the column for the original Features
+
+    except Exception as ex:
+        pass
+
+
     data_type = "train" if not test else "test"
     dataset_type = "Large" if not small else "Small"
 
