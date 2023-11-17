@@ -8,13 +8,10 @@ from utils.evaluation import eval_model
 
 
 class ModelTraining:
-    def __init__(self , model , poly = False , small = False):
+    def __init__(self , model , small = False):
         self.model = model
         self.small = small
-        self.poly = poly
-        self.degree  =  2
 
-        self.poly_deg = None
 
     def train_df(self , trans_df ):
         
@@ -35,16 +32,6 @@ class ModelTraining:
                                 , columns=["RunLength_Cum","N_Pulses_Cum"])
 
         
-        ##### Extracting Polynomial features 
-
-        if self.poly :
-            print(X_train , X_train.shape)
-
-            self.poly_deg = PolynomialFeatures(self.degree)
-            X_train = self.poly_deg.fit_transform(X_train)
-            X_test = self.poly_deg.transform(X_test)
-
-            print(X_train , X_train.shape)
 
 
         
@@ -69,8 +56,7 @@ class ModelTraining:
         if isinstance(X , (float , int)):
             X = np.array([X]).reshape(-1,1)
 
-        if self.poly :
-            X = self.poly_deg.transform(X)
+       
 
         results = self.model.predict(X)
 
@@ -82,12 +68,11 @@ class ModelTraining:
 
     def get_results(self, preds):
         df_out = pd.DataFrame(self.scaler.inverse_transform(preds)
-                                ,columns=self.scaler.get_feature_names_out())  /3600
+                                ,columns=self.scaler.get_feature_names_out())  / 3600
 
         return df_out
 
 
 if __name__ == '__main__':
-    fail_point = 0.9053574604
-
+    pass
     # lr =train_df(df_large)
