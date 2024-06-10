@@ -50,7 +50,7 @@ class DataProcessor:
         elif isinstance(self.df_large , pd.DataFrame ) and isinstance(self.df_small , pd.DataFrame):
             return self.df_large , self.df_small
             
-        pd.set_option('display.precision', 15)
+        pd.set_option('display.precisdion', 15)
 
         df_copy = df.copy()
 

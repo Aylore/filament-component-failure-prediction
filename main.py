@@ -53,9 +53,11 @@ if __name__ == "__main__":
 
     path = 'data/KUH.XML'
     
-    use_exp = False         ### change to True to use exponential regerssion 
+    use_exp = True         ### change to True to use exponential regerssion 
 
     if use_exp:
+         ## Initialize Date preprocessor
+         preprocess = DataProcessor()
          exp(path)
     else:
         ## Initialize model     

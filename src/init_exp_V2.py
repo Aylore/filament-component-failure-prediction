@@ -9,17 +9,24 @@ from utils.evaluation import eval_model , calc_rmse
 from utils.preprocess import DataProcessor
 
 
-def plot_pred( x_data, y_data, x_fit, y_fit, a_fit, b_fit ,  x_fit2 , y_fit2,  idx,  target_name):
+def plot_pred( x_data, y_data, x_fit, y_fit, a_fit, b_fit ,  x_fit2 , y_fit2,  idx,  target_name   , df):
+    targets = ["N_Pulses_Cum" , "RunLength_Cum"]
+    x_scaled , y_scaled , _ = scale(df , targets[0])
+    x_scaled2 , y_scaled2 , _ = scale(df , targets[1])
     if idx ==0:
-        plt.scatter(x_data, y_data, color='gray', label='Data for Large')
+        # plt.scatter(x_data, y_data, color='gray', label='Data for Large')
+        plt.scatter(x_scaled , y_scaled , color='cyan' , label = f'Actual values for large {targets[0]}')
+        plt.scatter(x_scaled2 , y_scaled2 , color='blue' , label = f'Actual values for large {targets[1]}')
+
     else:
-        plt.scatter(x_data, y_data, color='gray', label='Data for small')
-    plt.plot(x_fit, y_fit, color='blue', label=f'Exponential Regression {target_name[0]}')
-    plt.plot(x_fit2, y_fit2, color='red', label=f'Exponential Regression {target_name[1]}')
+        plt.scatter(x_scaled , y_scaled , color='blue' , label = f'Actual values for small {targets[0]}')
+        plt.scatter(x_scaled2 , y_scaled2 , color='cyan' , label = f'Actual values for small {targets[1]}')  
+    plt.plot(x_fit, y_fit, color='grey', label=f'Exponential Regression {target_name[0]} predictions' )
+    plt.plot(x_fit2, y_fit2, color='red', label=f'Exponential Regression {target_name[1]} predictions')
 
 
     plt.xlabel('NewCFactor')
-    plt.ylabel(f'{target_name}')
+    plt.ylabel("Cumulative Runlength & N_pulses")
     # plt.title(f'Exponential Regression of {self.data_type}')
     plt.legend()
     plt.show()
@@ -33,15 +40,15 @@ def plot_pred( x_data, y_data, x_fit, y_fit, a_fit, b_fit ,  x_fit2 , y_fit2,  i
 def exponential_func( x, a, b):
     return a * np.exp(b * x)
 
-def fit( x_data, y_data): 
+def fit( x_data, y_data , target_name='N_Pulses_Cum' , idx =0): 
     x_data = x_data.reshape(-1,) 
     y_data = y_data.reshape(-1,) 
     params, _ = curve_fit(exponential_func, x_data, y_data, maxfev=50000)
     a_fit, b_fit = params
     x_fit = np.linspace(min(x_data), max(x_data), len(x_data))
     y_fit = exponential_func(x_fit, a_fit, b_fit)
-
-    print(f"rmse : {  calc_rmse(y_data ,y_fit )}")
+    ll = ['large_N_Pulses_Cum' , 'large_RunLength_Cum' , 'small_N_Pulses_Cum' , 'small_RunLength_Cum']
+    print(f"rmse {'large' if idx ==0  else 'small'}_{target_name} : {  calc_rmse(y_data ,y_fit )}")
     return x_data, y_data, x_fit, y_fit, a_fit, b_fit
 
 
@@ -53,7 +60,7 @@ def scale(df , target_name):
     scaler_y = MinMaxScaler(feature_range=(1, 10))
     x_scaled = scaler_X.fit_transform(df.NewCFactor.values.reshape(-1, 1))
     y_scaled = scaler_y.fit_transform(df[target_name].values.reshape(-1, 1))
-    return x_scaled , y_scaled , scaler_X
+    return x_scaled , y_scaled , scaler_X 
 
 
 
@@ -70,7 +77,7 @@ def do_all(df_large , df_small):
             else:
                 df_name = "small"
             x_scaled , y_scaled , x_scaler = scale(df , target_name)
-            params = fit(x_scaled , y_scaled) 
+            params = fit(x_scaled , y_scaled , target_name , idx) 
             models[df_name + "_" + str(target_name) ] = params
 
         ## plot it as multioutput model
@@ -78,13 +85,13 @@ def do_all(df_large , df_small):
         if idx ==0:
             x_fit2 = models[f"large_{target_names[1]}"][2]
             y_fit2 = models[f"large_{target_names[1]}"][3]
-            plot_pred(*models[f"large_{target_names[0]}"] ,x_fit2 , y_fit2 ,idx , target_names)
+            plot_pred(*models[f"large_{target_names[0]}"] ,x_fit2 , y_fit2 ,idx , target_names ,df)
             # plot_pred(*models[f"large_{target_names[1]}"] , target_names[1])
 
         else:
             x_fit2 = models[f"small_{target_names[1]}"][2]
             y_fit2 = models[f"small_{target_names[1]}"][3]
-            plot_pred(*models[f"small_{target_names[0]}"] , x_fit2,y_fit2  ,idx , target_names)
+            plot_pred(*models[f"small_{target_names[0]}"] , x_fit2,y_fit2  ,idx , target_names , df)
             # plot_pred(*models[f"small_{target_names[1]}"] , target_names[1])
 
     return models , x_scaler
